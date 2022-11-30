@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuanqihou.schoolnews.dao.NewsDao">
+
+    <resultMap id="newsMap" type="com.chuanqihou.schoolnews.vo.NewsVo">
+        <id column="id" property="id"/>
+        <result column="categorize_id" property="categorizeId"/>
+        <result column="news_title" property="newsTitle"/>
+        <result column="news_content" property="newsContent"/>
+        <result column="source" property="source"/>
+        <result column="video" property="video"/>
+        <result column="position" property="position"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="update_user_id" property="updateUserId"/>
+        <collection property="images" column="id" select="com.chuanqihou.schoolnews.dao.NewsImgDao.selectImgByNewsId"/>
+    </resultMap>
+
+    <resultMap id="newsMap2" type="com.chuanqihou.schoolnews.entity.News">
+        <id column="id" property="id"/>
+        <result column="categorize_id" property="categorizeId"/>
+        <result column="news_title" property="newsTitle"/>
+        <result column="news_content" property="newsContent"/>
+        <result column="source" property="source"/>
+        <result column="video" property="video"/>
+        <result column="position" property="position"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="update_user_id" property="updateUserId"/>
+    </resultMap>
+
+    <select id="selectPosition" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news where position=#{position};
+    </select>
+
+    <select id="queryIndexNews" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news where categorize_id=#{categorizeId} and position=0 order by create_time desc limit 0,3
+    </select>
+
+    <select id="selectNewsByNewsId" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news where id=#{newsId}
+    </select>
+
+    <select id="queryNewsByCategorize" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news where categorize_id=#{categoryId} order by create_time desc limit #{skipCount},#{pageSize};
+    </select>
+
+    <select id="queryNewsByCategorizeTotal" resultType="int">
+        select count(*)
+        from t_news where categorize_id=#{categoryId}
+    </select>
+
+    <select id="queryNewsByRecent" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news order by create_time desc limit 0,5;
+    </select>
+
+    <select id="page" resultMap="newsMap">
+/*        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news*/
+
+        select n.*,ca.name categoryName,u.nick_name createUserName
+        from t_news n join t_categorize ca on n.categorize_id=ca.Id join t_user u on n.create_user_id=u.Id
+
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                n.categorize_id = #{categoryId}
+            </if>
+
+            <if test="title!=null and title!=''">
+                and n.news_title like '%' #{title} '%'
+            </if>
+        </where>
+
+        order by create_time desc limit #{skipCount},#{pageSize};
+    </select>
+
+<!--    <select id="page" resultMap="newsMap">
+        select id, categorize_id, news_title, news_content, source, video, position, create_time, update_time, create_user_id, update_user_id
+        from t_news
+
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                categorize_id = #{categoryId}
+            </if>
+
+            <if test="title!=null and title!=''">
+                news_title like '%' #{title} '%'
+            </if>
+        </where>
+
+        order by create_time desc limit #{skipCount},#{pageSize};
+    </select>-->
+
+    <select id="pageTotal" resultType="int">
+        select count(*)
+        from t_news
+
+        <where>
+            <if test="categoryId!=null and categoryId!=''">
+                categorize_id = #{categoryId}
+            </if>
+
+            <if test="title!=null and title!=''">
+                and news_title like '%' #{title} '%'
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="delete">
+        delete from t_news where id=#{id}
+    </delete>
+
+    <insert id="add">
+        insert into t_news (id, source, position, create_time, create_user_id,categorize_id, news_title, news_content,video)
+        values (#{id},#{source},#{position},#{createTime},#{createUserId},#{categorizeId},#{newsTitle},#{newsContent},#{video})
+    </insert>
+
+    <update id="update">
+        update t_news set update_user_id=#{updateUserId},update_time=#{updateTime}, source=#{source},position=#{position},categorize_id=#{categorizeId},news_title=#{newsTitle},news_content=#{newsContent},video=#{video}
+        where id=#{id}
+    </update>
+
+    <select id="getNewsByPosition" resultMap="newsMap2">
+        select id, source, position, create_time, update_time, create_user_id, update_user_id, categorize_id, news_title, news_content, video
+        from t_news where position=#{position} order by create_time limit 0,1;
+    </select>
+
+</mapper>
