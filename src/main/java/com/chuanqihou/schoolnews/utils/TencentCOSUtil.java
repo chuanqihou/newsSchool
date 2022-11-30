@@ -18,19 +18,19 @@ import java.util.Random;
  */
 public class TencentCOSUtil {
     // 存储桶名称
-    private static final String bucketName = "csmznewsimg-1253134529";
+    private static final String bucketName = "";
     //secretId 秘钥id
-    private static final String SecretId = "AKID2veASWO26wYyCD0YszsWwOdeS298uUqP";
+    private static final String SecretId = "";
     //SecretKey 秘钥
-    private static final String SecretKey = "PaTAgz7FYgbKp6A0fEaptkQuCIDvRlsn";
+    private static final String SecretKey = "";
     // 腾讯云 自定义文件夹名称
-    private static final String prefix = "news/img/";
+    private static final String prefix = "";
     // 访问域名
-    public static final String URL = "https://csmznewsimg-1253134529.cos.ap-guangzhou.myqcloud.com/";
+    public static final String URL = "";
     // 创建COS 凭证
     private static COSCredentials credentials = new BasicCOSCredentials(SecretId,SecretKey);
     // 配置 COS 区域 就购买时选择的区域 我这里是 广州（guangzhou）
-    private static ClientConfig clientConfig = new ClientConfig(new Region("ap-guangzhou"));
+    private static ClientConfig clientConfig = new ClientConfig(new Region(""));
 
     public static String uploadfile(MultipartFile file){
         // 创建 COS 客户端连接
